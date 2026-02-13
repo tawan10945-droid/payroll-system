@@ -1,0 +1,89 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Cloud infrastructure for Payroll System'
+
+Parameters:
+  DBUsername:
+    Type: String
+    Default: admin
+  DBPassword:
+    Type: String
+    NoEcho: true
+  FrontendImageUri:
+    Type: String
+  BackendImageUri:
+    Type: String
+
+Resources:
+  # RDS MySQL Database
+  PayrollDatabase:
+    Type: 'AWS::RDS::DBInstance'
+    Properties:
+      DBInstanceClass: db.t3.micro
+      AllocatedStorage: '20'
+      Engine: mysql
+      EngineVersion: '8.0'
+      MasterUsername: !Ref DBUsername
+      MasterUserPassword: !Ref DBPassword
+      DBName: payroll_db
+      PubliclyAccessible: true # Simplified for demo, should be restricted in production
+      VPCSecurityGroups:
+        - !GetAtt DatabaseSecurityGroup.GroupId
+
+  DatabaseSecurityGroup:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      GroupDescription: Enable MySQL access
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 3306
+          ToPort: 3306
+          CidrIp: 0.0.0.0/0 # Restricted to App Runner if possible
+
+  # App Runner for Backend
+  BackendService:
+    Type: 'AWS::AppRunner::Service'
+    Properties:
+      ServiceName: payroll-backend
+      NetworkConfiguration:
+        IpAddressType: PUBLIC
+      SourceConfiguration:
+        AutoDeploymentsEnabled: true
+        ImageRepository:
+          ImageIdentifier: !Ref BackendImageUri
+          ImageRepositoryType: ECR
+          ImageConfiguration:
+            Port: '3000'
+            RuntimeEnvironmentVariables:
+              - Name: DB_HOST
+                Value: !GetAtt PayrollDatabase.Endpoint.Address
+              - Name: DB_USER
+                Value: !Ref DBUsername
+              - Name: DB_PASSWORD
+                Value: !Ref DBPassword
+              - Name: DB_NAME
+                Value: payroll_db
+              - Name: JWT_SECRET
+                Value: 'your_production_jwt_secret'
+
+  # App Runner for Frontend
+  FrontendService:
+    Type: 'AWS::AppRunner::Service'
+    Properties:
+      ServiceName: payroll-frontend
+      NetworkConfiguration:
+        IpAddressType: PUBLIC
+      SourceConfiguration:
+        AutoDeploymentsEnabled: true
+        ImageRepository:
+          ImageIdentifier: !Ref FrontendImageUri
+          ImageRepositoryType: ECR
+          ImageConfiguration:
+            Port: '80'
+
+Outputs:
+  DatabaseEndpoint:
+    Value: !GetAtt PayrollDatabase.Endpoint.Address
+  BackendUrl:
+    Value: !GetAtt BackendService.ServiceUrl
+  FrontendUrl:
+    Value: !GetAtt FrontendService.ServiceUrl
