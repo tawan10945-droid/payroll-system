@@ -21,7 +21,7 @@ A full-stack web application for managing employee payroll, built with Angular a
 
 ### 1. Database Setup
 
-Create a PostgreSQL database:
+Create a MySQL database:
 
 ```bash
 createdb payroll_db
@@ -30,7 +30,7 @@ createdb payroll_db
 Import the schema:
 
 ```bash
-psql payroll_db < database/schema.sql
+msql payroll_db < database/schema.sql
 ```
 
 ### 2. Backend Setup
@@ -140,7 +140,7 @@ payroll-system/
 ### Backend
 - Node.js
 - Express.js
-- PostgreSQL
+- MySQL
 - JWT Authentication
 - bcrypt
 
