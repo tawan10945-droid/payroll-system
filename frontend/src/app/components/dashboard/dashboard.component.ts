@@ -6,10 +6,10 @@ import { PayrollService } from '../../services/payroll.service';
 import { Employee, Payroll } from '../../models/models';
 
 @Component({
-    selector: 'app-dashboard',
-    standalone: true,
-    imports: [CommonModule, RouterLink],
-    template: `
+  selector: 'app-dashboard',
+  standalone: true,
+  imports: [CommonModule, RouterLink],
+  template: `
     <div class="container">
       <div class="dashboard-header">
         <h1>Dashboard</h1>
@@ -124,7 +124,7 @@ import { Employee, Payroll } from '../../models/models';
       </div>
     </div>
   `,
-    styles: [`
+  styles: [`
     .dashboard-header {
       margin-bottom: 2rem;
     }
@@ -141,7 +141,7 @@ import { Employee, Payroll } from '../../models/models';
       gap: 1rem;
       align-items: center;
       box-shadow: var(--shadow-md);
-      border: 1px solid rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(0, 0, 0, 0.05);
       transition: all var(--transition-normal);
     }
 
@@ -178,7 +178,7 @@ import { Employee, Payroll } from '../../models/models';
       justify-content: space-between;
       align-items: center;
       padding: 1rem;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
     }
 
     .employee-item:last-child, .payroll-item:last-child {
@@ -197,7 +197,7 @@ import { Employee, Payroll } from '../../models/models';
       text-decoration: none;
       color: var(--text-primary);
       box-shadow: var(--shadow-md);
-      border: 1px solid rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(0, 0, 0, 0.05);
       transition: all var(--transition-normal);
     }
 
@@ -225,39 +225,39 @@ import { Employee, Payroll } from '../../models/models';
   `]
 })
 export class DashboardComponent implements OnInit {
-    totalEmployees = 0;
-    activeEmployees = 0;
-    totalPayroll = 0;
-    pendingPayrolls = 0;
-    recentEmployees: Employee[] = [];
-    recentPayrolls: Payroll[] = [];
+  totalEmployees = 0;
+  activeEmployees = 0;
+  totalPayroll = 0;
+  pendingPayrolls = 0;
+  recentEmployees: Employee[] = [];
+  recentPayrolls: Payroll[] = [];
 
-    constructor(
-        private employeeService: EmployeeService,
-        private payrollService: PayrollService
-    ) { }
+  constructor(
+    private employeeService: EmployeeService,
+    private payrollService: PayrollService
+  ) { }
 
-    ngOnInit(): void {
-        this.loadDashboardData();
-    }
+  ngOnInit(): void {
+    this.loadDashboardData();
+  }
 
-    loadDashboardData(): void {
-        this.employeeService.getAllEmployees().subscribe({
-            next: (employees) => {
-                this.totalEmployees = employees.length;
-                this.activeEmployees = employees.filter(e => e.status === 'active').length;
-                this.recentEmployees = employees.slice(0, 5);
-            },
-            error: (error) => console.error('Error loading employees:', error)
-        });
+  loadDashboardData(): void {
+    this.employeeService.getAllEmployees().subscribe({
+      next: (employees) => {
+        this.totalEmployees = employees.length;
+        this.activeEmployees = employees.filter(e => e.status === 'active').length;
+        this.recentEmployees = employees.slice(0, 5);
+      },
+      error: (error) => console.error('Error loading employees:', error)
+    });
 
-        this.payrollService.getAllPayroll().subscribe({
-            next: (payrolls) => {
-                this.totalPayroll = payrolls.reduce((sum, p) => sum + p.net_pay, 0);
-                this.pendingPayrolls = payrolls.filter(p => p.status === 'pending').length;
-                this.recentPayrolls = payrolls.slice(0, 5);
-            },
-            error: (error) => console.error('Error loading payrolls:', error)
-        });
-    }
+    this.payrollService.getAllPayroll().subscribe({
+      next: (payrolls) => {
+        this.totalPayroll = payrolls.reduce((sum, p) => sum + p.net_pay, 0);
+        this.pendingPayrolls = payrolls.filter(p => p.status === 'pending').length;
+        this.recentPayrolls = payrolls.slice(0, 5);
+      },
+      error: (error) => console.error('Error loading payrolls:', error)
+    });
+  }
 }

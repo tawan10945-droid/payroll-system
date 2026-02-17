@@ -2,10 +2,13 @@
     "name": "payroll-backend",
     "version": "1.0.0",
     "description": "Payroll System Backend API",
-    "main": "src/server.js",
+    "main": "dist/src/server.js",
+    "type": "module",
     "scripts": {
-        "start": "node src/server.js",
-        "dev": "nodemon src/server.js"
+        "start": "node dist/src/server.js",
+        "dev": "nodemon --exec ts-node src/server.ts",
+        "build": "tsc",
+        "init-db": "ts-node scripts/init_db.ts"
     },
     "keywords": [
         "payroll",
@@ -24,6 +27,14 @@
         "mysql2": "^3.16.3"
     },
     "devDependencies": {
-        "nodemon": "^3.0.1"
+        "@types/bcrypt": "^6.0.0",
+        "@types/body-parser": "^1.19.6",
+        "@types/cors": "^2.8.19",
+        "@types/express": "^5.0.6",
+        "@types/jsonwebtoken": "^9.0.10",
+        "@types/node": "^25.2.3",
+        "nodemon": "^3.0.1",
+        "ts-node": "^10.9.2",
+        "typescript": "^5.9.3"
     }
 }

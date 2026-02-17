@@ -64,7 +64,7 @@ import { AuthService } from '../../services/auth.service';
       align-items: center;
       justify-content: center;
       padding: var(--spacing-lg);
-      background: linear-gradient(135deg, var(--bg-primary) 0%, #1a1f35 50%, var(--bg-primary) 100%);
+      background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 50%, var(--bg-primary) 100%);
     }
 
     .login-card {
@@ -74,7 +74,7 @@ import { AuthService } from '../../services/auth.service';
       border-radius: var(--radius-xl);
       padding: 3rem;
       box-shadow: var(--shadow-xl);
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(0, 0, 0, 0.05);
       animation: slideUp 0.4s ease-out;
     }
 
@@ -120,7 +120,7 @@ import { AuthService } from '../../services/auth.service';
     .login-footer {
       text-align: center;
       padding-top: 1.5rem;
-      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      border-top: 1px solid rgba(0, 0, 0, 0.05);
     }
 
     .login-footer p {

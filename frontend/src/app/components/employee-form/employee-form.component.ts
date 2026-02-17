@@ -6,10 +6,10 @@ import { EmployeeService } from '../../services/employee.service';
 import { Employee, Department, Position } from '../../models/models';
 
 @Component({
-    selector: 'app-employee-form',
-    standalone: true,
-    imports: [CommonModule, FormsModule],
-    template: `
+  selector: 'app-employee-form',
+  standalone: true,
+  imports: [CommonModule, FormsModule],
+  template: `
     <div class="container">
       <div class="page-header">
         <h1>{{ isEditMode ? 'Edit Employee' : 'Add New Employee' }}</h1>
@@ -150,7 +150,7 @@ import { Employee, Department, Position } from '../../models/models';
       </div>
     </div>
   `,
-    styles: [`
+  styles: [`
     .page-header {
       margin-bottom: 2rem;
     }
@@ -160,7 +160,7 @@ import { Employee, Department, Position } from '../../models/models';
       gap: 1rem;
       margin-top: 2rem;
       padding-top: 2rem;
-      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      border-top: 1px solid rgba(0, 0, 0, 0.05);
     }
 
     @media (max-width: 768px) {
@@ -171,80 +171,80 @@ import { Employee, Department, Position } from '../../models/models';
   `]
 })
 export class EmployeeFormComponent implements OnInit {
-    employee: Employee = {
-        first_name: '',
-        last_name: '',
-        email: '',
-        hire_date: '',
-        department_id: 0,
-        position_id: 0,
-        salary: 0,
-        status: 'active'
-    };
-    departments: Department[] = [];
-    positions: Position[] = [];
-    isEditMode = false;
-    loading = false;
+  employee: Employee = {
+    first_name: '',
+    last_name: '',
+    email: '',
+    hire_date: '',
+    department_id: 0,
+    position_id: 0,
+    salary: 0,
+    status: 'active'
+  };
+  departments: Department[] = [];
+  positions: Position[] = [];
+  isEditMode = false;
+  loading = false;
 
-    constructor(
-        private employeeService: EmployeeService,
-        private router: Router,
-        private route: ActivatedRoute
-    ) { }
+  constructor(
+    private employeeService: EmployeeService,
+    private router: Router,
+    private route: ActivatedRoute
+  ) { }
 
-    ngOnInit(): void {
-        this.loadDepartments();
-        this.loadPositions();
+  ngOnInit(): void {
+    this.loadDepartments();
+    this.loadPositions();
 
-        const id = this.route.snapshot.paramMap.get('id');
-        if (id) {
-            this.isEditMode = true;
-            this.loadEmployee(+id);
-        }
+    const id = this.route.snapshot.paramMap.get('id');
+    if (id) {
+      this.isEditMode = true;
+      this.loadEmployee(+id);
     }
+  }
 
-    loadDepartments(): void {
-        this.employeeService.getDepartments().subscribe({
-            next: (data) => this.departments = data,
-            error: (error) => console.error('Error loading departments:', error)
-        });
-    }
+  loadDepartments(): void {
+    this.employeeService.getDepartments().subscribe({
+      next: (data) => this.departments = data,
+      error: (error) => console.error('Error loading departments:', error)
+    });
+  }
 
-    loadPositions(): void {
-        this.employeeService.getPositions().subscribe({
-            next: (data) => this.positions = data,
-            error: (error) => console.error('Error loading positions:', error)
-        });
-    }
+  loadPositions(): void {
+    this.employeeService.getPositions().subscribe({
+      next: (data) => this.positions = data,
+      error: (error) => console.error('Error loading positions:', error)
+    });
+  }
 
-    loadEmployee(id: number): void {
-        this.employeeService.getEmployeeById(id).subscribe({
-            next: (data) => this.employee = data,
-            error: (error) => console.error('Error loading employee:', error)
-        });
-    }
+  loadEmployee(id: number): void {
+    this.employeeService.getEmployeeById(id).subscribe({
+      next: (data) => this.employee = data,
+      error: (error) => console.error('Error loading employee:', error)
+    });
+  }
 
-    onSubmit(): void {
-        this.loading = true;
+  onSubmit(): void {
+    this.loading = true;
 
-        const operation = this.isEditMode
-            ? this.employeeService.updateEmployee(this.employee.employee_id!, this.employee)
-            : this.employeeService.createEmployee(this.employee);
+    const operation = this.isEditMode
+      ? this.employeeService.updateEmployee(this.employee.employee_id!, this.employee)
+      : this.employeeService.createEmployee(this.employee);
 
-        operation.subscribe({
-            next: () => {
-                alert(`Employee ${this.isEditMode ? 'updated' : 'created'} successfully`);
-                this.router.navigate(['/employees']);
-            },
-            error: (error) => {
-                console.error('Error saving employee:', error);
-                alert('Failed to save employee');
-                this.loading = false;
-            }
-        });
-    }
-
-    cancel(): void {
+    operation.subscribe({
+      next: () => {
+        alert(`Employee ${this.isEditMode ? 'updated' : 'created'} successfully`);
         this.router.navigate(['/employees']);
-    }
+      },
+      error: (error) => {
+        console.error('Error saving employee:', error);
+        alert('Failed to save employee');
+        this.loading = false;
+      }
+    });
+  }
+
+  cancel(): void {
+    this.router.navigate(['/employees']);
+  }
 }

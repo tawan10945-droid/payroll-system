@@ -1,0 +1,72 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'App Runner services for Payroll System'
+
+Parameters:
+  BackendImageUri:
+    Type: String
+  FrontendImageUri:
+    Type: String
+  DBHost:
+    Type: String
+  DBPassword:
+    Type: String
+    NoEcho: true
+
+Resources:
+  AppRunnerECRAccessRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: build.apprunner.amazonaws.com
+            Action: 'sts:AssumeRole'
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSAppRunnerServicePolicyForECRAccess
+
+  BackendService:
+    Type: 'AWS::AppRunner::Service'
+    Properties:
+      ServiceName: payroll-backend
+      SourceConfiguration:
+        AutoDeploymentsEnabled: true
+        AuthenticationConfiguration:
+          AccessRoleArn: !GetAtt AppRunnerECRAccessRole.Arn
+        ImageRepository:
+          ImageIdentifier: !Ref BackendImageUri
+          ImageRepositoryType: ECR
+          ImageConfiguration:
+            Port: '3000'
+            RuntimeEnvironmentVariables:
+              - Name: DB_HOST
+                Value: !Ref DBHost
+              - Name: DB_USER
+                Value: admin
+              - Name: DB_PASSWORD
+                Value: !Ref DBPassword
+              - Name: DB_NAME
+                Value: payroll_db
+              - Name: JWT_SECRET
+                Value: 'your_production_jwt_secret'
+
+  FrontendService:
+    Type: 'AWS::AppRunner::Service'
+    Properties:
+      ServiceName: payroll-frontend
+      SourceConfiguration:
+        AutoDeploymentsEnabled: true
+        AuthenticationConfiguration:
+          AccessRoleArn: !GetAtt AppRunnerECRAccessRole.Arn
+        ImageRepository:
+          ImageIdentifier: !Ref FrontendImageUri
+          ImageRepositoryType: ECR
+          ImageConfiguration:
+            Port: '80'
+
+Outputs:
+  BackendUrl:
+    Value: !GetAtt BackendService.ServiceUrl
+  FrontendUrl:
+    Value: !GetAtt FrontendService.ServiceUrl

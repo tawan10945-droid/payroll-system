@@ -5,10 +5,10 @@ import { ReportService } from '../../services/report.service';
 import { PayrollReport } from '../../models/models';
 
 @Component({
-    selector: 'app-reports',
-    standalone: true,
-    imports: [CommonModule, FormsModule],
-    template: `
+  selector: 'app-reports',
+  standalone: true,
+  imports: [CommonModule, FormsModule],
+  template: `
     <div class="container">
       <div class="page-header">
         <h1>Reports</h1>
@@ -101,7 +101,7 @@ import { PayrollReport } from '../../models/models';
               </tr>
             </tbody>
             <tfoot *ngIf="reportData.length > 0">
-              <tr style="background: var(--bg-tertiary); font-weight: 600;">
+              <tr style="background: var(--bg-tertiary); font-weight: 600; color: var(--text-primary);">
                 <td colspan="3">Total</td>
                 <td>\${{ getTotalGross() | number:'1.2-2' }}</td>
                 <td>\${{ getTotalNet() | number:'1.2-2' }}</td>
@@ -148,7 +148,7 @@ import { PayrollReport } from '../../models/models';
       </div>
     </div>
   `,
-    styles: [`
+  styles: [`
     .page-header {
       margin-bottom: 2rem;
     }
@@ -159,7 +159,7 @@ import { PayrollReport } from '../../models/models';
       padding: 2rem;
       text-align: center;
       box-shadow: var(--shadow-md);
-      border: 1px solid rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(0, 0, 0, 0.05);
       transition: all var(--transition-normal);
     }
 
@@ -196,7 +196,7 @@ import { PayrollReport } from '../../models/models';
       background: var(--bg-secondary);
       border-radius: var(--radius-md);
       padding: 1.5rem;
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(0, 0, 0, 0.1);
     }
 
     .payslip-card h4 {
@@ -233,7 +233,7 @@ import { PayrollReport } from '../../models/models';
       border-radius: var(--radius-lg);
       padding: 2rem;
       text-align: center;
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(0, 0, 0, 0.1);
     }
 
     .summary-card h4 {
@@ -253,90 +253,90 @@ import { PayrollReport } from '../../models/models';
   `]
 })
 export class ReportsComponent implements OnInit {
-    activeReport: string | null = null;
-    reportTitle = '';
-    selectedMonth = '01';
-    selectedYear = '2026';
-    reportData: PayrollReport[] = [];
-    payslips: any[] = [];
-    taxSummary = {
-        total: 0,
-        income: 0,
-        social: 0,
-        other: 0
-    };
+  activeReport: string | null = null;
+  reportTitle = '';
+  selectedMonth = '01';
+  selectedYear = '2026';
+  reportData: PayrollReport[] = [];
+  payslips: any[] = [];
+  taxSummary = {
+    total: 0,
+    income: 0,
+    social: 0,
+    other: 0
+  };
 
-    constructor(private reportService: ReportService) { }
+  constructor(private reportService: ReportService) { }
 
-    ngOnInit(): void {
-        const now = new Date();
-        this.selectedMonth = String(now.getMonth() + 1).padStart(2, '0');
-        this.selectedYear = String(now.getFullYear());
+  ngOnInit(): void {
+    const now = new Date();
+    this.selectedMonth = String(now.getMonth() + 1).padStart(2, '0');
+    this.selectedYear = String(now.getFullYear());
+  }
+
+  showPayrollSummary(): void {
+    this.activeReport = 'payroll';
+    this.reportTitle = 'Payroll Summary Report';
+    this.loadReport();
+  }
+
+  showPayslips(): void {
+    this.activeReport = 'payslips';
+    this.reportTitle = 'Employee Payslips';
+    this.loadPayslips();
+  }
+
+  showTaxReport(): void {
+    this.activeReport = 'tax';
+    this.reportTitle = 'Tax Deductions Report';
+    this.loadTaxReport();
+  }
+
+  loadReport(): void {
+    if (this.activeReport === 'payroll') {
+      this.reportService.getPayrollSummary(this.selectedMonth, this.selectedYear).subscribe({
+        next: (data) => this.reportData = data,
+        error: (error) => console.error('Error loading report:', error)
+      });
     }
+  }
 
-    showPayrollSummary(): void {
-        this.activeReport = 'payroll';
-        this.reportTitle = 'Payroll Summary Report';
-        this.loadReport();
-    }
+  loadPayslips(): void {
+    // Mock data for demonstration
+    this.payslips = [
+      { employee_name: 'John Doe', period: 'Jan 2026', net_pay: 4500 },
+      { employee_name: 'Jane Smith', period: 'Jan 2026', net_pay: 5200 },
+      { employee_name: 'Bob Johnson', period: 'Jan 2026', net_pay: 3800 }
+    ];
+  }
 
-    showPayslips(): void {
-        this.activeReport = 'payslips';
-        this.reportTitle = 'Employee Payslips';
-        this.loadPayslips();
-    }
-
-    showTaxReport(): void {
-        this.activeReport = 'tax';
-        this.reportTitle = 'Tax Deductions Report';
-        this.loadTaxReport();
-    }
-
-    loadReport(): void {
-        if (this.activeReport === 'payroll') {
-            this.reportService.getPayrollSummary(this.selectedMonth, this.selectedYear).subscribe({
-                next: (data) => this.reportData = data,
-                error: (error) => console.error('Error loading report:', error)
-            });
-        }
-    }
-
-    loadPayslips(): void {
+  loadTaxReport(): void {
+    this.reportService.getTaxReport(this.selectedYear).subscribe({
+      next: (data) => {
+        this.taxSummary = data;
+      },
+      error: (error) => {
+        console.error('Error loading tax report:', error);
         // Mock data for demonstration
-        this.payslips = [
-            { employee_name: 'John Doe', period: 'Jan 2026', net_pay: 4500 },
-            { employee_name: 'Jane Smith', period: 'Jan 2026', net_pay: 5200 },
-            { employee_name: 'Bob Johnson', period: 'Jan 2026', net_pay: 3800 }
-        ];
-    }
+        this.taxSummary = {
+          total: 45000,
+          income: 25000,
+          social: 15000,
+          other: 5000
+        };
+      }
+    });
+  }
 
-    loadTaxReport(): void {
-        this.reportService.getTaxReport(this.selectedYear).subscribe({
-            next: (data) => {
-                this.taxSummary = data;
-            },
-            error: (error) => {
-                console.error('Error loading tax report:', error);
-                // Mock data for demonstration
-                this.taxSummary = {
-                    total: 45000,
-                    income: 25000,
-                    social: 15000,
-                    other: 5000
-                };
-            }
-        });
-    }
+  getTotalGross(): number {
+    return this.reportData.reduce((sum, record) => sum + record.gross_pay, 0);
+  }
 
-    getTotalGross(): number {
-        return this.reportData.reduce((sum, record) => sum + record.gross_pay, 0);
-    }
+  getTotalNet(): number {
+    return this.reportData.reduce((sum, record) => sum + record.net_pay, 0);
+  }
 
-    getTotalNet(): number {
-        return this.reportData.reduce((sum, record) => sum + record.net_pay, 0);
-    }
-
-    exportReport(): void {
-        alert('Export functionality would download the report as PDF/Excel');
-    }
+  exportReport(): void {
+    alert('Export functionality would download the report as PDF/Excel');
+  }
 }

@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Configuration
-REGION="us-east-1"
-ACCOUNT_ID="YOUR_ACCOUNT_ID"
+REGION="ap-southeast-1"
+ACCOUNT_ID="451636241157"
 STACK_NAME="payroll-stack"
 
 echo "Building and Pushing Docker images to AWS ECR..."

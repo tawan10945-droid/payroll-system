@@ -4,10 +4,10 @@ import { RouterOutlet, RouterLink, Router } from '@angular/router';
 import { AuthService } from './services/auth.service';
 
 @Component({
-    selector: 'app-root',
-    standalone: true,
-    imports: [CommonModule, RouterOutlet, RouterLink],
-    template: `
+  selector: 'app-root',
+  standalone: true,
+  imports: [CommonModule, RouterOutlet, RouterLink],
+  template: `
     <div class="app-container">
       <nav class="navbar" *ngIf="authService.isAuthenticated()">
         <div class="container">
@@ -31,14 +31,14 @@ import { AuthService } from './services/auth.service';
       </main>
     </div>
   `,
-    styles: [`
+  styles: [`
     .app-container {
       min-height: 100vh;
     }
 
     .navbar {
       background: var(--surface);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
       padding: 1rem 0;
       box-shadow: var(--shadow-md);
       position: sticky;
@@ -78,7 +78,7 @@ import { AuthService } from './services/auth.service';
 
     .nav-link:hover {
       color: var(--text-primary);
-      background: rgba(255, 255, 255, 0.05);
+      background: rgba(0, 0, 0, 0.05);
     }
 
     .nav-link.active {
@@ -105,13 +105,13 @@ import { AuthService } from './services/auth.service';
   `]
 })
 export class AppComponent {
-    constructor(
-        public authService: AuthService,
-        private router: Router
-    ) { }
+  constructor(
+    public authService: AuthService,
+    private router: Router
+  ) { }
 
-    logout(): void {
-        this.authService.logout();
-        this.router.navigate(['/login']);
-    }
+  logout(): void {
+    this.authService.logout();
+    this.router.navigate(['/login']);
+  }
 }

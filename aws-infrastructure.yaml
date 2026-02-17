@@ -12,8 +12,26 @@ Parameters:
     Type: String
   BackendImageUri:
     Type: String
+  SecurityGroupId:
+    Type: String
+    Default: sg-05da441b7af99668b
+    Description: Existing Security Group ID with MySQL port 3306 open
 
 Resources:
+  # IAM Role for App Runner to pull from ECR
+  AppRunnerECRAccessRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: build.apprunner.amazonaws.com
+            Action: 'sts:AssumeRole'
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSAppRunnerServicePolicyForECRAccess
+
   # RDS MySQL Database
   PayrollDatabase:
     Type: 'AWS::RDS::DBInstance'
@@ -25,19 +43,9 @@ Resources:
       MasterUsername: !Ref DBUsername
       MasterUserPassword: !Ref DBPassword
       DBName: payroll_db
-      PubliclyAccessible: true # Simplified for demo, should be restricted in production
+      PubliclyAccessible: true
       VPCSecurityGroups:
-        - !GetAtt DatabaseSecurityGroup.GroupId
-
-  DatabaseSecurityGroup:
-    Type: 'AWS::EC2::SecurityGroup'
-    Properties:
-      GroupDescription: Enable MySQL access
-      SecurityGroupIngress:
-        - IpProtocol: tcp
-          FromPort: 3306
-          ToPort: 3306
-          CidrIp: 0.0.0.0/0 # Restricted to App Runner if possible
+        - !Ref SecurityGroupId
 
   # App Runner for Backend
   BackendService:
@@ -45,9 +53,11 @@ Resources:
     Properties:
       ServiceName: payroll-backend
       NetworkConfiguration:
-        IpAddressType: PUBLIC
+        IpAddressType: IPV4
       SourceConfiguration:
         AutoDeploymentsEnabled: true
+        AuthenticationConfiguration:
+          AccessRoleArn: !GetAtt AppRunnerECRAccessRole.Arn
         ImageRepository:
           ImageIdentifier: !Ref BackendImageUri
           ImageRepositoryType: ECR
@@ -71,9 +81,11 @@ Resources:
     Properties:
       ServiceName: payroll-frontend
       NetworkConfiguration:
-        IpAddressType: PUBLIC
+        IpAddressType: IPV4
       SourceConfiguration:
         AutoDeploymentsEnabled: true
+        AuthenticationConfiguration:
+          AccessRoleArn: !GetAtt AppRunnerECRAccessRole.Arn
         ImageRepository:
           ImageIdentifier: !Ref FrontendImageUri
           ImageRepositoryType: ECR
