@@ -144,6 +144,13 @@ payroll-system/
 - JWT Authentication
 - bcrypt
 
+### Docker
+- docker compose up --build
+
+### AWS Redeploy/Update
+- ./deploy-aws.sh
+
+
 ## 📝 License
 
 MIT License
